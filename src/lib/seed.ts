@@ -1,8 +1,8 @@
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
 import { generateId } from "./utils";
 
-type Db = BetterSQLite3Database<typeof schema>;
+type Db = PostgresJsDatabase<typeof schema>;
 
 export async function seedDatabase(db: Db) {
   // ── Users (needed for review/trail/badge foreign keys) ──
@@ -584,10 +584,10 @@ export async function seedDatabase(db: Db) {
 
   // ── Passport Badges ───────────────────────────────────
   await db.insert(schema.badges).values([
-    { id: generateId(), name: "First Bite", nameHi: "पहला निवाला", icon: "🍽️", description: "Post your first Proof-of-Taste review.", category: "reviewer", requirement: JSON.stringify({ type: "review_count", count: 1 }), xpReward: 50 },
-    { id: generateId(), name: "Chowk Explorer", nameHi: "चौक एक्सप्लोरर", icon: "🗺️", description: "Visit and review 5 places in Chowk.", category: "explorer", requirement: JSON.stringify({ type: "area_places_visited", area: "Chowk", count: 5 }), xpReward: 150 },
-    { id: generateId(), name: "Chaat Connoisseur", nameHi: "चाट पारखी", icon: "🥘", description: "Review 5 different chaat dishes.", category: "collector", requirement: JSON.stringify({ type: "category_reviews", category: "chaat", count: 5 }), xpReward: 120 },
-    { id: generateId(), name: "Trail Blazer", nameHi: "ट्रेल ब्लेज़र", icon: "🥾", description: "Complete a food trail start to finish.", category: "explorer", requirement: JSON.stringify({ type: "trails_completed", count: 1 }), xpReward: 200 },
-    { id: generateId(), name: "Community Voice", nameHi: "समुदाय की आवाज़", icon: "📣", description: "Get 10 helpful votes across your reviews.", category: "social", requirement: JSON.stringify({ type: "helpful_votes", count: 10 }), xpReward: 100 },
+    { id: generateId(), name: "First Bite", nameHi: "पहला निवाला", icon: "🍽️", description: "Post your first Proof-of-Taste review.", category: "reviewer", requirement: { type: "review_count", count: 1 }, xpReward: 50 },
+    { id: generateId(), name: "Chowk Explorer", nameHi: "चौक एक्सप्लोरर", icon: "🗺️", description: "Visit and review 5 places in Chowk.", category: "explorer", requirement: { type: "area_places_visited", area: "Chowk", count: 5 }, xpReward: 150 },
+    { id: generateId(), name: "Chaat Connoisseur", nameHi: "चाट पारखी", icon: "🥘", description: "Review 5 different chaat dishes.", category: "collector", requirement: { type: "category_reviews", category: "chaat", count: 5 }, xpReward: 120 },
+    { id: generateId(), name: "Trail Blazer", nameHi: "ट्रेल ब्लेज़र", icon: "🥾", description: "Complete a food trail start to finish.", category: "explorer", requirement: { type: "trails_completed", count: 1 }, xpReward: 200 },
+    { id: generateId(), name: "Community Voice", nameHi: "समुदाय की आवाज़", icon: "📣", description: "Get 10 helpful votes across your reviews.", category: "social", requirement: { type: "helpful_votes", count: 10 }, xpReward: 100 },
   ]);
 }

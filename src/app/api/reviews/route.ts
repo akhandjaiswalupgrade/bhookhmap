@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     hygiene: data.hygiene,
     value: data.value,
     text: data.text,
-    images: data.images ? JSON.stringify(data.images) : undefined,
+    images: data.images, // already string[] from JSON schema, postgres-native array
     visitDate: data.visitDate,
     verificationLevel: data.verificationLevel ?? "basic",
     proofPhoto: data.proofPhoto,

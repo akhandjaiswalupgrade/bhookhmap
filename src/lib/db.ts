@@ -1,13 +1,32 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import * as schema from "./schema";
-import path from "path";
 
-const DB_PATH = path.join(process.cwd(), "bhookhmap.db");
+// Singleton connection — Next.js dev server may reload modules; we cache on globalThis.
+declare global {
+  // eslint-disable-next-line no-var
+  var __bhookhmap_db: ReturnType<typeof postgres> | undefined;
+}
 
-const sqlite = new Database(DB_PATH);
-sqlite.pragma("journal_mode = WAL");
-sqlite.pragma("foreign_keys = ON");
+function getClient() {
+  if (global.__bhookhmap_db) return global.__bhookhmap_db;
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error(
+      "DATABASE_URL is not set. Set it in .env (local dev) or in your Vercel env vars (production).",
+    );
+  }
+  const client = postgres(url, {
+    prepare: false,
+    max: 10,
+    idle_timeout: 20,
+    connect_timeout: 10,
+  });
+  if (process.env.NODE_ENV !== "production") {
+    global.__bhookhmap_db = client;
+  }
+  return client;
+}
 
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle(getClient(), { schema });
 export { schema };
